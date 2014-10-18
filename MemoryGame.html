@@ -14,7 +14,7 @@
 			const SCREEN_WIDTH = 800;
 			const SCREEN_HEIGHT = 312;
 			
-			const ARROW_QTY_MIN = 3; //le nombre initial de flèches
+			const ARROW_QTY_MIN = 3; //le nombre initial de flÃ¨ches
 			const ARROW_QTY_MAX = 8;
 			const ARROW_SIZE = SCREEN_WIDTH / ARROW_QTY_MAX; //100px
 			
@@ -23,11 +23,11 @@
 			
 			const MAX_HP = 3;
 			
-			const XP_ROOT = 200;		//valeur de base pour calculer le XP nécessaire pour atteindre le prochain niveau.
-			const LV_ADD_ARROW = 3;		//nombre de levels up nécessaires pour augmenter de 1 flèche
+			const XP_ROOT = 200;		//valeur de base pour calculer le XP nÃ©cessaire pour atteindre le prochain niveau.
+			const LV_ADD_ARROW = 3;		//nombre de levels up nÃ©cessaires pour augmenter de 1 flÃ¨che
 			
-			//ces quatres valeurs sont pour g_sequence. La première est le nombre de caractères possibles.
-			//ces valeurs sont aussi associées aux noms des fichiers PNG
+			//ces quatres valeurs sont pour g_sequence. La premiÃ¨re est le nombre de caractÃ¨res possibles.
+			//ces valeurs sont aussi associÃ©es aux noms des fichiers PNG
 			const QTY_OF_CHARACTERS = 4;
 			const ARROW_LEFT = 0;
 			const ARROW_UP = 1;
@@ -35,23 +35,23 @@
 			const ARROW_DOWN = 3;
 			
 			
-			var g_score;			//les points / XP accumulés
-			var g_level;			//gère l'augmentation de la difficulté en fonction du score
-			var g_xp_for_lv			//le XP à atteindre pour atteindre le niveau suivant
-			var g_streak;			//ajoute un bonus aux points gagnés en fonction du nombre consécutif de réussites
-			var g_hp;				//il faut échouer quelques fois pour que la partie se termine.
+			var g_score;			//les points / XP accumulÃ©s
+			var g_level;			//gÃ¨re l'augmentation de la difficultÃ© en fonction du score
+			var g_xp_for_lv			//le XP Ã  atteindre pour atteindre le niveau suivant
+			var g_streak;			//ajoute un bonus aux points gagnÃ©s en fonction du nombre consÃ©cutif de rÃ©ussites
+			var g_hp;				//il faut Ã©chouer quelques fois pour que la partie se termine.
 			
-			var g_time;				//gère le temps diminutif d'affichage : stock les Millisecondes actuelles
+			var g_time;				//gÃ¨re le temps diminutif d'affichage : stock les Millisecondes actuelles
 			var g_ready;			//false: on ne peut utiliser le clavier ; true: on peut utiliser le clavier
-			var g_arrow_qty;		//pour gérer le nombre croissant de flèches
+			var g_arrow_qty;		//pour gÃ©rer le nombre croissant de flÃ¨ches
 			
-			var g_key_pushed;		//mémorise quelle touche a été appuyée
-			var g_counter;			//mémorise le nombre de touches appuyées
+			var g_key_pushed;		//mÃ©morise quelle touche a Ã©tÃ© appuyÃ©e
+			var g_counter;			//mÃ©morise le nombre de touches appuyÃ©es
 			
 		
 		
 		
-			function init() //(ré)initialise toutes les valeurs
+			function init() //(rÃ©)initialise toutes les valeurs
 			{
 				g_score = 0;
 				g_level = 1;
@@ -68,7 +68,7 @@
 			
 			
 
-			function startGame() //débute la séquence de timeouts; ne doit être fait qu'une seule fois
+			function startGame() //dÃ©bute la sÃ©quence de timeouts; ne doit Ãªtre fait qu'une seule fois
 			{
 				init();
 				refresh();
@@ -76,7 +76,7 @@
 			
 			
 			
-			function create_playZone() //génère le html d'affichage
+			function create_playZone() //gÃ©nÃ¨re le html d'affichage
 			{
 				//zone de jeu
 				var playZone = document.createElement("div");
@@ -102,13 +102,13 @@
 					outputScore.innerHTML = "Level : 1&nbsp;&nbsp;Life : " + MAX_HP + "&nbsp;&nbsp;Score : 0";
 				document.getElementById("playZone").appendChild(outputScore);
 				
-				//création des 8 flèches, non affichées
+				//crÃ©ation des 8 flÃ¨ches, non affichÃ©es
 				for (var i = 0; i < ARROW_QTY_MAX; ++i)
 				{
 					var arrow = document.createElement("img");
 						arrow.style.position = "absolute";
 						arrow.style.left = (ARROW_SIZE * i) + "px";
-						arrow.style.top = "80px";			        	//ce 80 ne concerne que l'affichage, qui est tout géré ici; donc pas besoin d'une constante
+						arrow.style.top = "80px";			        	//ce 80 ne concerne que l'affichage, qui est tout gÃ©rÃ© ici; donc pas besoin d'une constante
 						arrow.style.width = ARROW_SIZE + "px";
 						arrow.style.height = ARROW_SIZE + "px";
 						arrow.style.display = "none";
@@ -117,11 +117,11 @@
 					document.getElementById("playZone").appendChild(arrow);
 				}
 				
-				//création de la zone de commentaires
+				//crÃ©ation de la zone de commentaires
 				var outputComment = document.createElement("h1");
 					outputComment.style.position = "absolute";
 					outputComment.style.left = 0 + "px";
-					outputComment.style.top = (80 + ARROW_SIZE) + "px"; 	//ce 80 ne concerne que l'affichage, qui est tout géré ici; donc pas besoin d'une constante
+					outputComment.style.top = (80 + ARROW_SIZE) + "px"; 	//ce 80 ne concerne que l'affichage, qui est tout gÃ©rÃ© ici; donc pas besoin d'une constante
 					outputComment.style.color = "#414141";
 					outputComment.style.fontSize = "40px";
 					outputComment.style.textAlign = "left";
@@ -133,7 +133,7 @@
 				
 				
 				
-				//pour afficher la progression des levels jusqu'au LV 20, juste sous la boîte principale
+				//pour afficher la progression des levels jusqu'au LV 20, juste sous la boÃ®te principale
 				var outputInstructions = document.createElement("table");
 					outputInstructions.id = "outputInstructions";
 					outputInstructions.style.textAlign = "right";
@@ -160,12 +160,12 @@
 			
 			
 			
-			function close() //détruit tout l'html en ordre inverse, pour permettre de réinitialiser en toute simplicité en le recréant
+			function close() //dÃ©truit tout l'html en ordre inverse, pour permettre de rÃ©initialiser en toute simplicitÃ© en le recrÃ©ant
 			{
 				document.getElementById("parentZone").removeChild(document.getElementById("outputInstructions"));
 				document.getElementById("playZone").removeChild(document.getElementById("outputComment"));
 				
-				//détruit toutes les arrows
+				//dÃ©truit toutes les arrows
 				for (var i = 0; i < ARROW_QTY_MAX; ++i)
 					document.getElementById("playZone").removeChild(document.getElementById("arrow" + i));
 				
@@ -175,23 +175,28 @@
 		
 		
 		
-			function refresh() //démarre la suite de timers
+			function refresh() //dÃ©marre la suite de timers
 			{
 				g_ready = false;
 				g_sequence = generateSequence();
-				setTimeout("waitForInput();", g_time); //après le délai actuel, on passe à l'étape suivante
+				setTimeout("waitForInput();", g_time); //aprÃ¨s le dÃ©lai actuel, on passe Ã  l'Ã©tape suivante
 			}
 			
 			
 			
-			function generateSequence() //génère et affiche une séquence de flèches
+			function generateSequence() //gÃ©nÃ¨re et affiche une sÃ©quence de flÃ¨ches
 			{
 				var new_sequence = [];
 				
 				for (var i = 0; i < g_arrow_qty; ++i)
 				{
+<<<<<<< HEAD
 					new_sequence[i] = Math.floor(Math.random() * (QTY_OF_CHARACTERS) );						//détermine la séquence de flèches
 					document.getElementById("arrow" + i).src = "arrow" + new_sequence[i] + ".png";	//on affiche les flèches déterminées
+=======
+					new_sequence[i] = Math.floor(Math.random() * (QTY_OF_CHARACTERS) );						//dÃ©termine la sÃ©quence de flÃ¨ches
+					document.getElementById("arrow" + i).src = "arrow" + new_sequence[i] + ".png";	//on affiche les flÃ¨ches dÃ©terminÃ©es
+>>>>>>> origin/master
 					document.getElementById("arrow" + i).style.display = "inline";							//les rend visibles
 				}
 				
@@ -200,7 +205,7 @@
 			
 			
 			
-			function waitForInput() //fait disparaître les flèches et rend le input possible
+			function waitForInput() //fait disparaÃ®tre les flÃ¨ches et rend le input possible
 			{
 				g_counter = 0;
 				g_ready = true;
@@ -215,7 +220,7 @@
 				g_score += gainedPoints;
 				var ouputGainedPoints;
 				
-				//beaucoup de else if, mais c'est nécessaire pour changer de couleur et de texte
+				//beaucoup de else if, mais c'est nÃ©cessaire pour changer de couleur et de texte
 				if (g_streak == 1)
 					ouputGainedPoints = "<span style='color:#7700cf;'>Nice! X1 Gained " + gainedPoints + " points.</span>";
 					
@@ -257,23 +262,23 @@
 				if (g_score >= g_xp_for_lv)
 				{
 					g_level++;
-					g_counter++; //pour qu'on n'ait pas à rentrer une flèche supplémentaire lorsqu'on monte de niveau.
+					g_counter++; //pour qu'on n'ait pas Ã  rentrer une flÃ¨che supplÃ©mentaire lorsqu'on monte de niveau.
 					g_xp_for_lv += XP_ROOT * g_level * g_level;
 					
 					
-					 // à chaque LV_ADD_ARROW niveaux (3) après LV 1, on ajoute une flèche
-					if ( (g_level % LV_ADD_ARROW == 1  ||  LV_ADD_ARROW == 1) && g_arrow_qty < ARROW_QTY_MAX)    // "||  LV_ADD_ARROW == 1" est nécessaire pour supporter la valeur 1, si on choisissait de changer cette constante
+					 // Ã  chaque LV_ADD_ARROW niveaux (3) aprÃ¨s LV 1, on ajoute une flÃ¨che
+					if ( (g_level % LV_ADD_ARROW == 1  ||  LV_ADD_ARROW == 1) && g_arrow_qty < ARROW_QTY_MAX)    // "||  LV_ADD_ARROW == 1" est nÃ©cessaire pour supporter la valeur 1, si on choisissait de changer cette constante
 					{
 						g_arrow_qty++;
 					}
 					
-					g_time -= (g_time * TIME_DIMINUTION); //diminution du temps ici. C'est très progressif, mais rendrait les highscore très compétitifs et difficiles à battre
+					g_time -= (g_time * TIME_DIMINUTION); //diminution du temps ici. C'est trÃ¨s progressif, mais rendrait les highscore trÃ¨s compÃ©titifs et difficiles Ã  battre
 					
 					//checkLevel();
 					return true;
 				}
-				//Même si on diminue XP_ROOT, on ne peut gagner plus d'une level à la fois, c'est voulu. Si on voulait changer ceci, il
-				//suffirait d'appeler checkLevel() à la fin de checkLevel(), juste avant le return : c'est TRÈS UTILE pour tester.
+				//MÃªme si on diminue XP_ROOT, on ne peut gagner plus d'une level Ã  la fois, c'est voulu. Si on voulait changer ceci, il
+				//suffirait d'appeler checkLevel() Ã  la fin de checkLevel(), juste avant le return : c'est TRÃˆS UTILE pour tester.
 			}
 			
 			
@@ -282,15 +287,15 @@
 				for (var i = 0; i < g_arrow_qty; ++i)
 					document.getElementById("arrow" + i).style.display = "none";
 				
-				//ça ouvre la porte pour tricher en regardant le code HTML, mais les détruire rendrait les choses plus compliquées.
+				//Ã§a ouvre la porte pour tricher en regardant le code HTML, mais les dÃ©truire rendrait les choses plus compliquÃ©es.
 				//ainsi on assume que qui jouerait ce genre de jeu ne fera pas ce genre de chose, ou sinon, tirera plus de plaisir
-				//à trouver cette solution que de jouer au jeu correctement.
+				//Ã  trouver cette solution que de jouer au jeu correctement.
 			}
 			
 			
 			function processKeyUpEvent(e)
 			{
-				if (!g_ready)	//on ne peut entrer des flèches qu'à l'étape waitForInput()
+				if (!g_ready)	//on ne peut entrer des flÃ¨ches qu'Ã  l'Ã©tape waitForInput()
 					return;
 					
 				switch(e.keyCode)
@@ -302,20 +307,24 @@
 				}
 				
 				
-				if (g_key_pushed < QTY_OF_CHARACTERS) //si une touche a été appuyée, la valeur sera inférieure à ce nombre
+				if (g_key_pushed < QTY_OF_CHARACTERS) //si une touche a Ã©tÃ© appuyÃ©e, la valeur sera infÃ©rieure Ã  ce nombre
 				{
 					
 					
-					if (g_key_pushed == g_sequence[g_counter] ) //si la flèche correspondant à la séquence a été appuyée
+					if (g_key_pushed == g_sequence[g_counter] ) //si la flÃ¨che correspondant Ã  la sÃ©quence a Ã©tÃ© appuyÃ©e
 					{
-						document.getElementById("arrow" + g_counter).style.display = "inline"; //affiche la bonne flèche
+						document.getElementById("arrow" + g_counter).style.display = "inline"; //affiche la bonne flÃ¨che
 						g_counter++;
 					}
 					
 					
-					else //si la mauvaise flèche a été appuyée
+					else //si la mauvaise flÃ¨che a Ã©tÃ© appuyÃ©e
 					{
+<<<<<<< HEAD
 						//afficher la flèche appuyée erronée
+=======
+						//afficher la flÃ¨che appuyÃ©e erronÃ©e
+>>>>>>> origin/master
 						document.getElementById("arrow" + g_counter).src = "arrow" + g_key_pushed + ".png";
 						document.getElementById("arrow" + g_counter).style.display = "inline";
 						
@@ -325,7 +334,7 @@
 						g_hp--;
 						g_streak = 0;
 						
-						//vérifie s'il nous reste des vies
+						//vÃ©rifie s'il nous reste des vies
 						checkGameOver();
 						
 						//pour sortir du loop sans activer le if ci-dessous. Le +100 est arbitraire,
@@ -334,7 +343,7 @@
 					}
 				
 				
-					if (g_counter == g_arrow_qty) //si on a correctement tapé toute la séquence
+					if (g_counter == g_arrow_qty) //si on a correctement tapÃ© toute la sÃ©quence
 					{
 						g_streak++;
 						
@@ -354,18 +363,18 @@
 					}
 				}
 				
-				g_key_pushed = QTY_OF_CHARACTERS;	//ceci est supérieur au key possible de touche appuyée; ainsi, chaque key appuyée ne sera vérifiée qu'une fois
-													//même si on retourne dans processKeyUpEvent en appuyant sur une touche quelconque
+				g_key_pushed = QTY_OF_CHARACTERS;	//ceci est supÃ©rieur au key possible de touche appuyÃ©e; ainsi, chaque key appuyÃ©e ne sera vÃ©rifiÃ©e qu'une fois
+													//mÃªme si on retourne dans processKeyUpEvent en appuyant sur une touche quelconque
 				
-				document.getElementById("outputScore").innerHTML = "Level : " + g_level + "&nbsp;&nbsp;Life : " + g_hp + "&nbsp;&nbsp;Score : " + g_score; //au cas où les hp aient changé
+				document.getElementById("outputScore").innerHTML = "Level : " + g_level + "&nbsp;&nbsp;Life : " + g_hp + "&nbsp;&nbsp;Score : " + g_score; //au cas oÃ¹ les hp aient changÃ©
 				
-				if (g_counter >= g_arrow_qty) //après une séquence réussie ou un échec, on recommence avec une nouvelles séquence après ½ seconde
+				if (g_counter >= g_arrow_qty) //aprÃ¨s une sÃ©quence rÃ©ussie ou un Ã©chec, on recommence avec une nouvelles sÃ©quence aprÃ¨s Â½ seconde
 				{
-					//puisqu'ici refresh vient après un petit délai (pour le confort du joueur),
-					//il faut d'emblée disabler le input.
+					//puisqu'ici refresh vient aprÃ¨s un petit dÃ©lai (pour le confort du joueur),
+					//il faut d'emblÃ©e disabler le input.
 					g_ready = false;
 					
-					//d'abord on retire les flèches de notre input pour éviter toute confusion, puis on retourne à refresh.
+					//d'abord on retire les flÃ¨ches de notre input pour Ã©viter toute confusion, puis on retourne Ã  refresh.
 					setTimeout(function()
 					{
 						for (var i = 0; i < g_arrow_qty; ++i)
