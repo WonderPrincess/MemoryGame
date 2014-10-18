@@ -1,0 +1,399 @@
+<html>
+	
+	<head>
+		<title>Question 3</title>
+		
+		<script language="JavaScript" type="text/javascript">
+		//////////////Mon highscore (sans changer les valeurs pour tester) est LV 14 (164300 points). Bonne chance!
+		
+			const KEY_LEFT = 37;
+			const KEY_UP = 38;
+			const KEY_RIGHT = 39;
+			const KEY_DOWN = 40;
+			
+			const SCREEN_WIDTH = 800;
+			const SCREEN_HEIGHT = 312;
+			
+			const ARROW_QTY_MIN = 3; //le nombre initial de flèches
+			const ARROW_QTY_MAX = 8;
+			const ARROW_SIZE = SCREEN_WIDTH / ARROW_QTY_MAX; //100px
+			
+			const INIT_TIME = 3000;
+			const TIME_DIMINUTION = 0.06;	//pourcentage de la diminution du temps d'affichage
+			
+			const MAX_HP = 3;
+			
+			const XP_ROOT = 200;		//valeur de base pour calculer le XP nécessaire pour atteindre le prochain niveau.
+			const LV_ADD_ARROW = 3;		//nombre de levels up nécessaires pour augmenter de 1 flèche
+			
+			//ces quatres valeurs sont pour g_sequence. La première est le nombre de caractères possibles.
+			//ces valeurs sont aussi associées aux noms des fichiers PNG
+			const QTY_OF_CHARACTERS = 4;
+			const ARROW_LEFT = 0;
+			const ARROW_UP = 1;
+			const ARROW_RIGHT = 2;
+			const ARROW_DOWN = 3;
+			
+			
+			var g_score;			//les points / XP accumulés
+			var g_level;			//gère l'augmentation de la difficulté en fonction du score
+			var g_xp_for_lv			//le XP à atteindre pour atteindre le niveau suivant
+			var g_streak;			//ajoute un bonus aux points gagnés en fonction du nombre consécutif de réussites
+			var g_hp;				//il faut échouer quelques fois pour que la partie se termine.
+			
+			var g_time;				//gère le temps diminutif d'affichage : stock les Millisecondes actuelles
+			var g_ready;			//false: on ne peut utiliser le clavier ; true: on peut utiliser le clavier
+			var g_arrow_qty;		//pour gérer le nombre croissant de flèches
+			
+			var g_key_pushed;		//mémorise quelle touche a été appuyée
+			var g_counter;			//mémorise le nombre de touches appuyées
+			
+		
+		
+		
+			function init() //(ré)initialise toutes les valeurs
+			{
+				g_score = 0;
+				g_level = 1;
+				g_xp_for_lv = XP_ROOT;
+				g_streak = 0;
+				g_hp = MAX_HP;
+				
+				g_time = INIT_TIME;
+				g_ready = false;
+				g_arrow_qty = ARROW_QTY_MIN;
+				
+				create_playZone();
+			}
+			
+			
+
+			function startGame() //débute la séquence de timeouts; ne doit être fait qu'une seule fois
+			{
+				init();
+				refresh();
+			}
+			
+			
+			
+			function create_playZone() //génère le html d'affichage
+			{
+				//zone de jeu
+				var playZone = document.createElement("div");
+					playZone.style.borderWidth = "4px";
+					playZone.style.borderStyle = "solid";
+					playZone.style.borderColor = "#414141";
+					
+					playZone.style.position = "relative";
+					playZone.style.width = SCREEN_WIDTH + "px";
+					playZone.style.height = SCREEN_HEIGHT + "px";
+					
+					playZone.style.backgroundColor = "#e7e7e7";
+					playZone.id = "playZone";
+				document.getElementById("parentZone").appendChild(playZone);
+				
+				//affichage du level, de la vie et du score
+				var outputScore = document.createElement("h1");
+					outputScore.style.color = "#414141";
+					outputScore.style.fontSize = "40px";
+					outputScore.style.textAlign = "left";
+					outputScore.style.margin = "12px";
+					outputScore.id = "outputScore";
+					outputScore.innerHTML = "Level : 1&nbsp;&nbsp;Life : " + MAX_HP + "&nbsp;&nbsp;Score : 0";
+				document.getElementById("playZone").appendChild(outputScore);
+				
+				//création des 8 flèches, non affichées
+				for (var i = 0; i < ARROW_QTY_MAX; ++i)
+				{
+					var arrow = document.createElement("img");
+						arrow.style.position = "absolute";
+						arrow.style.left = (ARROW_SIZE * i) + "px";
+						arrow.style.top = "80px";			        	//ce 80 ne concerne que l'affichage, qui est tout géré ici; donc pas besoin d'une constante
+						arrow.style.width = ARROW_SIZE + "px";
+						arrow.style.height = ARROW_SIZE + "px";
+						arrow.style.display = "none";
+						arrow.src = "";
+						arrow.id = "arrow" + i;
+					document.getElementById("playZone").appendChild(arrow);
+				}
+				
+				//création de la zone de commentaires
+				var outputComment = document.createElement("h1");
+					outputComment.style.position = "absolute";
+					outputComment.style.left = 0 + "px";
+					outputComment.style.top = (80 + ARROW_SIZE) + "px"; 	//ce 80 ne concerne que l'affichage, qui est tout géré ici; donc pas besoin d'une constante
+					outputComment.style.color = "#414141";
+					outputComment.style.fontSize = "40px";
+					outputComment.style.textAlign = "left";
+					outputComment.style.margin = "12px";
+					outputComment.id = "outputComment";
+					outputComment.innerHTML = "Memorize the sequence.";
+				document.getElementById("playZone").appendChild(outputComment);
+				
+				
+				
+				
+				//pour afficher la progression des levels jusqu'au LV 20, juste sous la boîte principale
+				var outputInstructions = document.createElement("table");
+					outputInstructions.id = "outputInstructions";
+					outputInstructions.style.textAlign = "right";
+					outputInstructions.innerHTML = "<th colspan='3'>+1 ARROW EACH " + LV_ADD_ARROW + " LEVELS AFTER THE FIRST.</th>";
+					
+					var xp_counter = 0;					
+					
+					for (var i = 1; i <= 20; ++i)
+					{
+						outputInstructions.innerHTML += "<tr>"
+							+ "<td>LV " + i + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>"
+							+ "<td>+ " + (XP_ROOT * i * i)  + " XP</td>"
+							+ "<td>" + (XP_ROOT * i * i + xp_counter) + " XP total</td>"
+							+ "</tr>";
+						
+						xp_counter += XP_ROOT * i * i;
+					}
+					
+					//outputInstructions.innerHTML += "</table>";
+				document.getElementById("parentZone").appendChild(outputInstructions);
+							
+						
+			}
+			
+			
+			
+			function close() //détruit tout l'html en ordre inverse, pour permettre de réinitialiser en toute simplicité en le recréant
+			{
+				document.getElementById("parentZone").removeChild(document.getElementById("outputInstructions"));
+				document.getElementById("playZone").removeChild(document.getElementById("outputComment"));
+				
+				//détruit toutes les arrows
+				for (var i = 0; i < ARROW_QTY_MAX; ++i)
+					document.getElementById("playZone").removeChild(document.getElementById("arrow" + i));
+				
+				document.getElementById("playZone").removeChild(document.getElementById("outputScore"));
+				document.getElementById("parentZone").removeChild(document.getElementById("playZone"));
+			}
+		
+		
+		
+			function refresh() //démarre la suite de timers
+			{
+				g_ready = false;
+				g_sequence = generateSequence();
+				setTimeout("waitForInput();", g_time); //après le délai actuel, on passe à l'étape suivante
+			}
+			
+			
+			
+			function generateSequence() //génère et affiche une séquence de flèches
+			{
+				var new_sequence = [];
+				
+				for (var i = 0; i < g_arrow_qty; ++i)
+				{
+					new_sequence[i] = Math.floor(Math.random() * (QTY_OF_CHARACTERS) );						//détermine la séquence de flèches
+					document.getElementById("arrow" + i).src = "images/arrow" + new_sequence[i] + ".png";	//on affiche les flèches déterminées
+					document.getElementById("arrow" + i).style.display = "inline";							//les rend visibles
+				}
+				
+				return new_sequence;
+			}
+			
+			
+			
+			function waitForInput() //fait disparaître les flèches et rend le input possible
+			{
+				g_counter = 0;
+				g_ready = true;
+				hideArrows();
+			}
+			
+			
+			
+			function updateScore()
+			{
+				var gainedPoints = 100 * g_level * g_streak;
+				g_score += gainedPoints;
+				var ouputGainedPoints;
+				
+				//beaucoup de else if, mais c'est nécessaire pour changer de couleur et de texte
+				if (g_streak == 1)
+					ouputGainedPoints = "<span style='color:#7700cf;'>Nice! X1 Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 2)
+					ouputGainedPoints = "<span style='color:blue;'>Good! X2! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 3)
+					ouputGainedPoints = "<span style='color:#00b300;'>Awesome! X3! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 4)
+					ouputGainedPoints = "<span style='color:#b9db69;'>Heroic! X4!! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 5)
+					ouputGainedPoints = "<span style='color:#bccd00;'>Mythological! X5!! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 6)
+					ouputGainedPoints = "<span style='color:#e6c200;'>Godlike! X6!! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 7)
+					ouputGainedPoints = "<span style='color:#ff7b00;'>Titanlike! X7!!! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 8)
+					ouputGainedPoints = "<span style='color:#ff3b00;'>Above existence! X8!!! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak == 9)
+					ouputGainedPoints = "<span style='color:#ff006b;'>Ineffable! X9!!! Gained " + gainedPoints + " points.</span>";
+					
+				else if (g_streak >= 10)
+					ouputGainedPoints = "<span style='color:#ee82ee;'>Oh you! ^.^ X" + g_streak + "!!!! Gained " + gainedPoints + " points.</span>";
+					
+				
+				return ouputGainedPoints;
+			}
+			
+			
+			
+			function checkLevel()
+			{
+				if (g_score >= g_xp_for_lv)
+				{
+					g_level++;
+					g_counter++; //pour qu'on n'ait pas à rentrer une flèche supplémentaire lorsqu'on monte de niveau.
+					g_xp_for_lv += XP_ROOT * g_level * g_level;
+					
+					
+					 // à chaque LV_ADD_ARROW niveaux (3) après LV 1, on ajoute une flèche
+					if ( (g_level % LV_ADD_ARROW == 1  ||  LV_ADD_ARROW == 1) && g_arrow_qty < ARROW_QTY_MAX)    // "||  LV_ADD_ARROW == 1" est nécessaire pour supporter la valeur 1, si on choisissait de changer cette constante
+					{
+						g_arrow_qty++;
+					}
+					
+					g_time -= (g_time * TIME_DIMINUTION); //diminution du temps ici. C'est très progressif, mais rendrait les highscore très compétitifs et difficiles à battre
+					
+					//checkLevel();
+					return true;
+				}
+				//Même si on diminue XP_ROOT, on ne peut gagner plus d'une level à la fois, c'est voulu. Si on voulait changer ceci, il
+				//suffirait d'appeler checkLevel() à la fin de checkLevel(), juste avant le return : c'est TRÈS UTILE pour tester.
+			}
+			
+			
+			function hideArrows()
+			{
+				for (var i = 0; i < g_arrow_qty; ++i)
+					document.getElementById("arrow" + i).style.display = "none";
+				
+				//ça ouvre la porte pour tricher en regardant le code HTML, mais les détruire rendrait les choses plus compliquées.
+				//ainsi on assume que qui jouerait ce genre de jeu ne fera pas ce genre de chose, ou sinon, tirera plus de plaisir
+				//à trouver cette solution que de jouer au jeu correctement.
+			}
+			
+			
+			function processKeyUpEvent(e)
+			{
+				if (!g_ready)	//on ne peut entrer des flèches qu'à l'étape waitForInput()
+					return;
+					
+				switch(e.keyCode)
+				{
+					case KEY_LEFT	:	g_key_pushed = ARROW_LEFT;	break;
+					case KEY_UP		:	g_key_pushed = ARROW_UP;	break;
+					case KEY_RIGHT	:	g_key_pushed = ARROW_RIGHT;	break;
+					case KEY_DOWN	:	g_key_pushed = ARROW_DOWN;	break;
+				}
+				
+				
+				if (g_key_pushed < QTY_OF_CHARACTERS) //si une touche a été appuyée, la valeur sera inférieure à ce nombre
+				{
+					
+					
+					if (g_key_pushed == g_sequence[g_counter] ) //si la flèche correspondant à la séquence a été appuyée
+					{
+						document.getElementById("arrow" + g_counter).style.display = "inline"; //affiche la bonne flèche
+						g_counter++;
+					}
+					
+					
+					else //si la mauvaise flèche a été appuyée
+					{
+						//afficher la flèche appuyée erronée
+						document.getElementById("arrow" + g_counter).src = "images/arrow" + g_key_pushed + ".png";
+						document.getElementById("arrow" + g_counter).style.display = "inline";
+						
+						//output d'erreur
+						document.getElementById("outputComment").innerHTML = "<span style='color:#414141;'>Streak loss!</span>";
+						
+						g_hp--;
+						g_streak = 0;
+						
+						//vérifie s'il nous reste des vies
+						checkGameOver();
+						
+						//pour sortir du loop sans activer le if ci-dessous. Le +100 est arbitraire,
+						//le but est juste de ne rien perturber si on monte de lv.
+						g_counter = g_arrow_qty + 100;
+					}
+				
+				
+					if (g_counter == g_arrow_qty) //si on a correctement tapé toute la séquence
+					{
+						g_streak++;
+						
+						var outputGainedPoints = updateScore();
+						
+						
+						var outputLevelUp = "";
+						var levelUp = checkLevel();
+						
+						if (levelUp)
+							outputLevelUp = "<br /><span style='color:#e6c200;'>You gained a level!</span>";
+						
+						
+						//refresh outputs
+						
+						document.getElementById("outputComment").innerHTML = outputGainedPoints + " " + outputLevelUp;	
+					}
+				}
+				
+				g_key_pushed = QTY_OF_CHARACTERS;	//ceci est supérieur au key possible de touche appuyée; ainsi, chaque key appuyée ne sera vérifiée qu'une fois
+													//même si on retourne dans processKeyUpEvent en appuyant sur une touche quelconque
+				
+				document.getElementById("outputScore").innerHTML = "Level : " + g_level + "&nbsp;&nbsp;Life : " + g_hp + "&nbsp;&nbsp;Score : " + g_score; //au cas où les hp aient changé
+				
+				if (g_counter >= g_arrow_qty) //après une séquence réussie ou un échec, on recommence avec une nouvelles séquence après ½ seconde
+				{
+					//puisqu'ici refresh vient après un petit délai (pour le confort du joueur),
+					//il faut d'emblée disabler le input.
+					g_ready = false;
+					
+					//d'abord on retire les flèches de notre input pour éviter toute confusion, puis on retourne à refresh.
+					setTimeout(function()
+					{
+						for (var i = 0; i < g_arrow_qty; ++i)
+							document.getElementById("arrow" + i).style.display = "none";
+					}, 250);
+					
+					setTimeout("refresh();", 500); //
+				}
+	
+			}
+			
+			
+			function checkGameOver()
+			{
+				if (g_hp < 1)
+				{
+					alert("Life depleted!\n\nYou score is " + g_score +".\nYou reached level " + g_level + ".");
+					close();
+					init();
+				}
+			}
+			
+		</script>
+		
+		
+	</head>
+	
+	<body id="parentZone" onLoad="startGame()" onKeyUp="processKeyUpEvent(event)">
+	</body>
+	
+</html>
