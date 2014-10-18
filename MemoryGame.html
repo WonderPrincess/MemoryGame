@@ -191,7 +191,7 @@
 				for (var i = 0; i < g_arrow_qty; ++i)
 				{
 					new_sequence[i] = Math.floor(Math.random() * (QTY_OF_CHARACTERS) );						//détermine la séquence de flèches
-					document.getElementById("arrow" + i).src = "arrow" + new_sequence[i] + ".png";	//on affiche les flèches déterminées
+					document.getElementById("arrow" + i).src = "arrow" + new_sequence[i] + ".PNG";	//on affiche les flèches déterminées
 					document.getElementById("arrow" + i).style.display = "inline";							//les rend visibles
 				}
 				
@@ -316,7 +316,7 @@
 					else //si la mauvaise flèche a été appuyée
 					{
 						//afficher la flèche appuyée erronée
-						document.getElementById("arrow" + g_counter).src = "arrow" + g_key_pushed + ".png";
+						document.getElementById("arrow" + g_counter).src = "arrow" + g_key_pushed + ".PNG";
 						document.getElementById("arrow" + g_counter).style.display = "inline";
 						
 						//output d'erreur
